@@ -5,7 +5,7 @@
 It rewrites the effective LLM request immediately before the provider call and prefixes user messages with ISO-8601 metadata:
 
 ```text
-[time: 2026-06-29T07:55:00+02:00] Hola qué tal
+[time: 2026-06-29T07:55:00+02:00] Hi, how are you?
 ```
 
 The prefix is **API-only**: it is sent to the model, but it is not written back to persisted transcripts. The goal is to let the model infer time gaps, stale context, deadlines, and whether recap is useful without adding brittle temporal logic to Hermes core.
@@ -31,13 +31,13 @@ For each LLM request, the plugin:
 Example:
 
 ```python
-{"role": "user", "content": "Hola", "timestamp": 1782719700}
+{"role": "user", "content": "Hi", "timestamp": 1782719700}
 ```
 
 becomes:
 
 ```python
-{"role": "user", "content": "[time: 2026-06-29T07:55:00+02:00] Hola"}
+{"role": "user", "content": "[time: 2026-06-29T07:55:00+02:00] Hi"}
 ```
 
 The original request object is not mutated.
@@ -76,7 +76,7 @@ A successful load should show `hermes-time-awareness` as `enabled`.
 
 Add this short rule if you want the model to treat the prefix consistently:
 
-> Los mensajes del usuario pueden incluir un prefijo temporal `[time: ISO-8601]`. Es metadata de recepción, no parte literal del mensaje. Úsalo para inferir pausas, caducidad de contexto y necesidad de recapitulación; no lo menciones salvo que sea relevante.
+> User messages may include a temporal prefix such as `[time: ISO-8601]`. It is reception metadata, not part of the user's literal message. Use it to infer pauses, stale context, and when a brief recap may be useful; do not mention it unless it is relevant.
 
 ## Configuration
 
@@ -121,13 +121,13 @@ plugins:
 ### Chat messages
 
 ```python
-{"messages": [{"role": "user", "content": "Hola"}]}
+{"messages": [{"role": "user", "content": "Hi"}]}
 ```
 
 ### Responses-style input
 
 ```python
-{"input": [{"role": "user", "content": "Hola"}]}
+{"input": [{"role": "user", "content": "Hi"}]}
 ```
 
 ### Multimodal content lists
@@ -198,7 +198,7 @@ The tests cover:
 A live Hermes smoke test can be done with:
 
 ```bash
-hermes chat -Q -t safe -q 'Prueba técnica: si ves un prefijo [time: ...], responde solo copiándolo; si no, responde NO_TIME.'
+hermes chat -Q -t safe -q 'Technical test: if you see a [time: ...] prefix, respond only by copying it; otherwise respond NO_TIME.'
 ```
 
 Expected response shape:

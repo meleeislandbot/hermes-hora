@@ -22,7 +22,7 @@ python -m py_compile __init__.py time_awareness.py test_time_awareness.py
 After installing/enabling the plugin and starting a fresh Hermes session:
 
 ```bash
-hermes chat -Q -t safe -q 'Prueba técnica: si ves un prefijo [time: ...], responde solo copiándolo; si no, responde NO_TIME.'
+hermes chat -Q -t safe -q 'Technical test: if you see a [time: ...] prefix, respond only by copying it; otherwise respond NO_TIME.'
 ```
 
 Expected output should start with:
