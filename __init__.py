@@ -1,4 +1,4 @@
-"""Hermes Time Awareness plugin.
+"""Hora plugin.
 
 API-only middleware that prefixes user messages sent to the provider with
 ``[time: ISO-8601]`` metadata while leaving persisted transcripts clean.

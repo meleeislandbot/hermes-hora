@@ -1,6 +1,6 @@
-# hermes-time-awareness
+# Hora
 
-`hermes-time-awareness` is a lightweight external plugin for [Hermes Agent](https://hermes-agent.nousresearch.com/docs) that gives the model request-time awareness of when user messages were received.
+`Hora` (`hermes-hora`) is a lightweight external plugin for [Hermes Agent](https://hermes-agent.nousresearch.com/docs) that gives the model request-time awareness of when user messages were received.
 
 It rewrites the effective LLM request immediately before the provider call and prefixes user messages with ISO-8601 metadata:
 
@@ -47,7 +47,7 @@ The original request object is not mutated.
 ### Recommended: Hermes plugin installer
 
 ```bash
-hermes plugins install meleeislandbot/hermes-time-awareness --enable
+hermes plugins install meleeislandbot/hermes-hora --enable
 ```
 
 Restart Hermes or start a new session. Plugin changes do not affect already-running sessions.
@@ -64,15 +64,15 @@ Check discovery:
 hermes plugins list --plain --no-bundled
 ```
 
-A successful install should show `hermes-time-awareness` as `enabled`.
+A successful install should show `hermes-hora` as `enabled`.
 
 ### Manual Git install
 
 ```bash
 mkdir -p ~/.hermes/plugins
-git clone https://github.com/meleeislandbot/hermes-time-awareness.git \
-  ~/.hermes/plugins/hermes-time-awareness
-hermes plugins enable hermes-time-awareness
+git clone https://github.com/meleeislandbot/hermes-hora.git \
+  ~/.hermes/plugins/hermes-hora
+hermes plugins enable hermes-hora
 ```
 
 ## Disable or remove
@@ -80,19 +80,19 @@ hermes plugins enable hermes-time-awareness
 Disable the plugin without deleting it:
 
 ```bash
-hermes plugins disable hermes-time-awareness
+hermes plugins disable hermes-hora
 ```
 
 Enable it again:
 
 ```bash
-hermes plugins enable hermes-time-awareness
+hermes plugins enable hermes-hora
 ```
 
 Remove it completely:
 
 ```bash
-hermes plugins remove hermes-time-awareness
+hermes plugins remove hermes-hora
 ```
 
 Start a new Hermes session after enabling/disabling/removing. For gateway use, also run `hermes gateway restart`.
@@ -100,10 +100,10 @@ Start a new Hermes session after enabling/disabling/removing. For gateway use, a
 ### Development symlink
 
 ```bash
-git clone https://github.com/meleeislandbot/hermes-time-awareness.git
-cd hermes-time-awareness
-ln -s "$PWD" ~/.hermes/plugins/hermes-time-awareness
-hermes plugins enable hermes-time-awareness
+git clone https://github.com/meleeislandbot/hermes-hora.git
+cd hermes-hora
+ln -s "$PWD" ~/.hermes/plugins/hermes-hora
+hermes plugins enable hermes-hora
 ```
 
 Check discovery with debug logs:
@@ -120,14 +120,14 @@ Add this short rule if you want the model to treat the prefix consistently:
 
 ## Configuration
 
-Optional config lives under `plugins.entries.hermes-time-awareness` in `~/.hermes/config.yaml`:
+Optional config lives under `plugins.entries.hermes-hora` in `~/.hermes/config.yaml`:
 
 ```yaml
 plugins:
   enabled:
-    - hermes-time-awareness
+    - hermes-hora
   entries:
-    hermes-time-awareness:
+    hermes-hora:
       enabled: true
       timezone: Europe/Madrid
       user_messages_only: true

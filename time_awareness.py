@@ -1,4 +1,4 @@
-"""Request rewriting helpers for hermes-time-awareness."""
+"""Request rewriting helpers for Hora."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ try:  # Python 3.9+
 except Exception:  # pragma: no cover
     ZoneInfo = None  # type: ignore
 
-PLUGIN_ID = "hermes-time-awareness"
+PLUGIN_ID = "hermes-hora"
 
 _TIME_PREFIX_RE = re.compile(
     r"^\[time:\s*(?P<iso>\d{4}-\d{2}-\d{2}T[^\]]+)\]\s*",
@@ -86,7 +86,7 @@ def load_config() -> TimeAwarenessConfig:
 
     plugins:
       entries:
-        hermes-time-awareness:
+        hermes-hora:
           enabled: true
           timezone: Europe/Madrid
           user_messages_only: true
