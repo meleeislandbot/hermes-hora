@@ -4,6 +4,8 @@ import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+import pytest
+
 import time_awareness as twa
 
 
@@ -18,6 +20,12 @@ def _cfg(**overrides):
     base = dict(timezone_name="Europe/Madrid")
     base.update(overrides)
     return twa.TimeAwarenessConfig(**base)
+
+
+@pytest.fixture(autouse=True)
+def _force_madrid_config(monkeypatch):
+    """Keep timestamp assertions deterministic across CI host time zones."""
+    monkeypatch.setattr(twa, "load_config", lambda: _cfg())
 
 
 def test_prefixes_user_messages_with_stored_timestamp_and_strips_metadata():
