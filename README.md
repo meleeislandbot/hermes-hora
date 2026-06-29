@@ -44,7 +44,29 @@ The original request object is not mutated.
 
 ## Installation
 
-### From GitHub
+### Recommended: Hermes plugin installer
+
+```bash
+hermes plugins install meleeislandbot/hermes-time-awareness --enable
+```
+
+Restart Hermes or start a new session. Plugin changes do not affect already-running sessions.
+
+If you run Hermes through the gateway, restart it too:
+
+```bash
+hermes gateway restart
+```
+
+Check discovery:
+
+```bash
+hermes plugins list --plain --no-bundled
+```
+
+A successful install should show `hermes-time-awareness` as `enabled`.
+
+### Manual Git install
 
 ```bash
 mkdir -p ~/.hermes/plugins
@@ -53,7 +75,27 @@ git clone https://github.com/meleeislandbot/hermes-time-awareness.git \
 hermes plugins enable hermes-time-awareness
 ```
 
-Restart Hermes or start a new session. Plugin changes do not affect already-running sessions.
+## Disable or remove
+
+Disable the plugin without deleting it:
+
+```bash
+hermes plugins disable hermes-time-awareness
+```
+
+Enable it again:
+
+```bash
+hermes plugins enable hermes-time-awareness
+```
+
+Remove it completely:
+
+```bash
+hermes plugins remove hermes-time-awareness
+```
+
+Start a new Hermes session after enabling/disabling/removing. For gateway use, also run `hermes gateway restart`.
 
 ### Development symlink
 
@@ -64,13 +106,11 @@ ln -s "$PWD" ~/.hermes/plugins/hermes-time-awareness
 hermes plugins enable hermes-time-awareness
 ```
 
-Check discovery:
+Check discovery with debug logs:
 
 ```bash
 HERMES_PLUGINS_DEBUG=1 hermes plugins list
 ```
-
-A successful load should show `hermes-time-awareness` as `enabled`.
 
 ## Optional SOUL.md / personality guidance
 
