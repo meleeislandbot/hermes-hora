@@ -66,6 +66,19 @@ def test_stamps_only_current_missing_timestamp_by_default(monkeypatch):
     assert messages[2]["content"] == "[time: 2026-06-29T08:00:00+02:00] Current without timestamp"
 
 
+def test_stamps_first_message_without_timestamp(monkeypatch):
+    fixed = _epoch(2026, 6, 30, 8, 54, 35)
+    monkeypatch.setattr(twa.time, "time", lambda: fixed)
+    request = {"messages": [{"role": "user", "content": "Primer mensaje"}]}
+
+    result = twa.rewrite_llm_request(request=request, platform="cli")
+
+    assert result is not None
+    assert result["request"]["messages"][0]["content"] == (
+        "[time: 2026-06-30T08:54:35+02:00] Primer mensaje"
+    )
+
+
 def test_deduplicates_existing_time_prefix_and_preserves_embedded_time(monkeypatch):
     monkeypatch.setattr(twa.time, "time", lambda: _epoch(2026, 6, 29, 9, 0, 0))
     request = {
