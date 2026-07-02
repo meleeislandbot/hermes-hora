@@ -154,7 +154,7 @@ def _rewrite_message_list(
             continue
 
         content = msg.get("content")
-        clean_content, embedded_epoch = _strip_known_time_prefixes(content)
+        clean_content, embedded_epoch = _strip_known_time_prefixes(content, cfg=cfg)
         if clean_content is not content:
             msg["content"] = clean_content
             content = clean_content
@@ -186,7 +186,7 @@ def _prefix_content(msg: dict[str, Any], epoch: float, *, cfg: TimeAwarenessConf
     content = msg.get("content")
 
     if isinstance(content, str):
-        clean, _ = _strip_known_time_prefixes(content)
+        clean, _ = _strip_known_time_prefixes(content, cfg=cfg)
         msg["content"] = f"{prefix} {clean}" if clean else prefix
         return True
 
@@ -201,7 +201,7 @@ def _prefix_content(msg: dict[str, Any], epoch: float, *, cfg: TimeAwarenessConf
             elif isinstance(part.get("content"), str):
                 text_key = "content"
             if text_key:
-                clean, _ = _strip_known_time_prefixes(part[text_key])
+                clean, _ = _strip_known_time_prefixes(part[text_key], cfg=cfg)
                 part[text_key] = f"{prefix} {clean}" if clean else prefix
                 return True
         content.insert(0, {"type": "text", "text": prefix})
@@ -229,9 +229,11 @@ def _timezone(name: str):
         return datetime.now().astimezone().tzinfo
 
 
-def _strip_known_time_prefixes(content: Any) -> tuple[Any, Optional[float]]:
+def _strip_known_time_prefixes(
+    content: Any, *, cfg: TimeAwarenessConfig
+) -> tuple[Any, Optional[float]]:
     if isinstance(content, str):
-        clean, epoch = _strip_string_prefixes(content)
+        clean, epoch = _strip_string_prefixes(content, cfg=cfg)
         return clean, epoch
     if isinstance(content, list):
         embedded_epoch = None
@@ -243,7 +245,7 @@ def _strip_known_time_prefixes(content: Any) -> tuple[Any, Optional[float]]:
                 for key in ("text", "content"):
                     value = copied.get(key)
                     if isinstance(value, str):
-                        clean, epoch = _strip_string_prefixes(value)
+                        clean, epoch = _strip_string_prefixes(value, cfg=cfg)
                         if clean != value:
                             copied[key] = clean
                             changed = True
@@ -257,7 +259,7 @@ def _strip_known_time_prefixes(content: Any) -> tuple[Any, Optional[float]]:
     return content, None
 
 
-def _strip_string_prefixes(text: str) -> tuple[str, Optional[float]]:
+def _strip_string_prefixes(text: str, *, cfg: TimeAwarenessConfig) -> tuple[str, Optional[float]]:
     embedded_epoch = None
     out = text
     while True:
@@ -270,6 +272,7 @@ def _strip_string_prefixes(text: str) -> tuple[str, Optional[float]]:
         if human:
             # Strip native gateway timestamp if present so this plugin can
             # standardize on [time: ISO-8601] without duplicate prefixes.
+            embedded_epoch = _coerce_gateway_human_match(human, cfg=cfg) or embedded_epoch
             out = out[human.end():]
             continue
         break
@@ -307,6 +310,17 @@ def _coerce_iso(value: str) -> Optional[float]:
         return None
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=datetime.now().astimezone().tzinfo)
+    return float(dt.timestamp())
+
+
+def _coerce_gateway_human_match(match: re.Match[str], *, cfg: TimeAwarenessConfig) -> Optional[float]:
+    date_part = match.group("date")
+    time_part = match.group("time")
+    try:
+        dt = datetime.strptime(f"{date_part} {time_part}", "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return None
+    dt = dt.replace(tzinfo=_timezone(cfg.timezone_name))
     return float(dt.timestamp())
 
 

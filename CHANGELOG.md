@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 - 2026-07-02
+
+- Parse native Hermes gateway human timestamp prefixes when converting them to `[time: ISO-8601]`, preserving historical gateway send time.
+- Add the recommended English SOUL.md temporal-context prompt.
+
 ## 0.1.0 - 2026-06-29
 
 Initial release.

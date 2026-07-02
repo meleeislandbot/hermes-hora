@@ -81,6 +81,23 @@ def test_deduplicates_existing_time_prefix_and_preserves_embedded_time(monkeypat
     assert len(re.findall(r"\[time:", content)) == 1
 
 
+def test_converts_native_gateway_human_prefix_to_iso(monkeypatch):
+    monkeypatch.setattr(twa.time, "time", lambda: _epoch(2026, 4, 28, 14, 0, 0))
+    request = {
+        "messages": [
+            {
+                "role": "user",
+                "content": "[Tue 2026-04-28 13:40:53 CEST] Hola desde gateway",
+            },
+        ]
+    }
+
+    result = twa.rewrite_llm_request(request=request, platform="telegram")
+
+    content = result["request"]["messages"][0]["content"]
+    assert content == "[time: 2026-04-28T13:40:53+02:00] Hola desde gateway"
+
+
 def test_multimodal_first_text_block_is_prefixed(monkeypatch):
     monkeypatch.setattr(twa.time, "time", lambda: _epoch(2026, 6, 29, 8, 0, 0))
     request = {

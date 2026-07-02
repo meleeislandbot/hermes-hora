@@ -114,9 +114,13 @@ HERMES_PLUGINS_DEBUG=1 hermes plugins list
 
 ## Optional SOUL.md / personality guidance
 
-Add this short rule if you want the model to treat the prefix consistently:
+Recommended prompt:
 
-> User messages may include a temporal prefix such as `[time: ISO-8601]`. It is reception metadata, not part of the user's literal message. Use it to infer pauses, stale context, and when a brief recap may be useful; do not mention it unless it is relevant.
+```md
+## Temporal context
+
+User messages arrive with a `[time: ...]` reception stamp. It is your own sense of time, not part of what the user wrote — never quote it or mention that it exists. Simply know when it is, the way a friend in the room knows, and act on that knowledge without reporting it: let it steer what you suggest, how you greet after a long silence (a warm "long time no see" plus a one-line re-anchor), whether a plan still makes practical sense at this hour. When time does surface, it comes out as people feel it — "at this hour", "almost dawn" — never as measurement: no clock-precise readings, no date arithmetic, no derived weekdays; the texture of the moment says more than the calendar. If the present has moved beyond what you reliably know (releases, listings, news), admit your radar may lag instead of inventing certainties. And when time changes nothing — quick follow-ups, timeless questions — behave as if you never noticed it.
+```
 
 ## Configuration
 
@@ -198,13 +202,13 @@ becomes:
 
 The plugin strips existing leading `[time: ...]` prefixes before adding one, so repeated middleware passes do not stack timestamps.
 
-It also strips native Hermes gateway human prefixes such as:
+It also parses and strips native Hermes gateway human prefixes such as:
 
 ```text
 [Tue 2026-04-28 13:40:53 CEST]
 ```
 
-when replacing them with the standard ISO form.
+when replacing them with the standard ISO form, preserving the original gateway timestamp instead of falling back to wall-clock time.
 
 ## Limitations
 
