@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-07-12
+
+- Make the request-scoped middleware platform authoritative for cron exclusion.
+- Ignore leaked process-global `HERMES_CRON_SESSION=1` in explicitly interactive contexts while retaining it as a fallback for legacy callers with no platform.
+- Add regression coverage for both the leaked-variable case and the compatibility fallback.
+
 ## 0.1.1 - 2026-07-02
 
 - Parse native Hermes gateway human timestamp prefixes when converting them to `[time: ISO-8601]`, preserving historical gateway send time.

@@ -154,7 +154,7 @@ plugins:
 | `stamp_missing_current` | `true` | If the current turn has no timestamp metadata, stamp it with wall-clock time. |
 | `stamp_missing_historical` | `false` | If historical turns have no timestamp metadata, stamp them with current wall-clock time. Usually undesirable. |
 | `exclude_platforms` | `[cron]` | Platform names to skip. |
-| `exclude_cron` | `true` | Skip cron contexts, including `HERMES_CRON_SESSION=1`. |
+| `exclude_cron` | `true` | Skip cron contexts. The request-scoped middleware `platform` is authoritative; `HERMES_CRON_SESSION=1` is used only when no platform is supplied. |
 | `exclude_kanban` | `true` | Skip Kanban worker contexts, including `HERMES_KANBAN_TASK=1`. |
 | `prefix_key` | `time` | Prefix key, normally producing `[time: ...]`. |
 
@@ -217,6 +217,8 @@ The plugin keeps prefixes API-only. For historical user messages whose provider 
 If Hermes later exposes original message timestamp metadata directly to `llm_request` middleware before provider-specific sanitization, this plugin should prefer that metadata.
 
 Subagent exclusion is currently best-effort because there is no stable public subagent marker in the `llm_request` middleware context.
+
+Cron exclusion deliberately prioritizes the request-scoped middleware `platform` over the ambient `HERMES_CRON_SESSION` environment variable. Older Hermes versions can leak that process-global variable from the scheduler into interactive gateway requests; allowing it to override an explicit `telegram`, `discord`, `cli`, or other platform would disable Hora after the first cron run. The environment marker is retained only as a compatibility fallback for callers that provide no platform.
 
 ## Testing
 

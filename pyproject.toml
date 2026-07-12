@@ -1,6 +1,6 @@
 [project]
 name = "hermes-hora"
-version = "0.1.0"
+version = "0.1.2"
 description = "Hora: API-only conversational time awareness for Hermes Agent"
 readme = "README.md"
 requires-python = ">=3.9"

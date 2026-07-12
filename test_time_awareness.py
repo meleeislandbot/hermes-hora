@@ -138,6 +138,29 @@ def test_cron_platform_is_excluded(monkeypatch):
     assert twa.rewrite_llm_request(request=request, platform="cron") is None
 
 
+def test_explicit_interactive_platform_ignores_leaked_cron_env(monkeypatch):
+    """An ambient scheduler flag must not override middleware session context."""
+    fixed = _epoch(2026, 6, 29, 8, 0, 0)
+    monkeypatch.setattr(twa.time, "time", lambda: fixed)
+    monkeypatch.setenv("HERMES_CRON_SESSION", "1")
+    request = {"messages": [{"role": "user", "content": "Interactive turn"}]}
+
+    result = twa.rewrite_llm_request(request=request, platform="telegram")
+
+    assert result is not None
+    assert result["request"]["messages"][0]["content"] == (
+        "[time: 2026-06-29T08:00:00+02:00] Interactive turn"
+    )
+
+
+def test_cron_env_remains_legacy_fallback_without_platform(monkeypatch):
+    """Keep compatibility for cron callers that provide no middleware platform."""
+    monkeypatch.setenv("HERMES_CRON_SESSION", "1")
+    request = {"messages": [{"role": "user", "content": "Legacy cron job"}]}
+
+    assert twa.rewrite_llm_request(request=request) is None
+
+
 def test_rewrites_responses_input_shape(monkeypatch):
     monkeypatch.setattr(twa.time, "time", lambda: _epoch(2026, 6, 29, 8, 0, 0))
     request = {"input": [{"role": "user", "content": "Hola"}]}

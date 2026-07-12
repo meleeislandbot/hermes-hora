@@ -338,13 +338,26 @@ def _is_excluded_context(cfg: TimeAwarenessConfig, context: dict[str, Any]) -> b
     platform = str(context.get("platform") or "").strip().lower()
     if platform and platform in cfg.exclude_platforms:
         return True
-    if cfg.exclude_cron and (platform == "cron" or _env_truthy("HERMES_CRON_SESSION")):
+    if cfg.exclude_cron and _is_cron_context(platform):
         return True
     if cfg.exclude_kanban and _env_truthy("HERMES_KANBAN_TASK"):
         return True
     # There is no stable public subagent marker in llm_request context today.
     # Keep this opt-in flag for future core support; fail open for now.
     return False
+
+
+def _is_cron_context(platform: str) -> bool:
+    """Classify cron without letting process-global state override the request.
+
+    ``llm_request`` supplies an explicit platform for normal Hermes agents, and
+    current cron jobs set it to ``cron``.  Treat that request-scoped value as
+    authoritative.  The environment variable remains only as a compatibility
+    fallback for legacy/non-standard callers that provide no platform at all.
+    """
+    if platform:
+        return platform == "cron"
+    return _env_truthy("HERMES_CRON_SESSION")
 
 
 def _bool(value: Any, default: bool) -> bool:
